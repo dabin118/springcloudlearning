@@ -1,0 +1,41 @@
+server:
+  port: 7000
+spring:
+  application:
+    name: cloud-gateway-7000
+  devtools:
+     restart:
+        enabled: true
+
+  cloud:
+    gateway:
+      routes:
+        - id: api
+          uri: lb://API-PROVIDER
+          predicates:
+          - Path=/api/**
+          filters:
+          - RewritePath=/api/(?<segment>.*), /$\{segment}
+        - id: apiservice
+          uri: lb://APISERVICE-PROVIDER
+          predicates:
+          - Path=/apiservice/**
+          filters:
+          - RewritePath=/apiservice/(?<segment>.*), /$\{segment}
+
+
+#      discovery:
+#        locator:
+#          enabled: true # 开启从注册中心动态创建路由的功能，利用微服务名进行路由
+
+eureka:
+  instance:
+    instance-id: cloud-gateway-7000
+    hostname: cloud-gateway-7000
+    perfer-ip-adress: true
+  client: # 服务提供者provider注册金eureka服务列表内
+    service-url:
+      register-with-eureka: true
+      fetch-registry: true
+      defaultZone: http://localhost:7001/eureka
+
